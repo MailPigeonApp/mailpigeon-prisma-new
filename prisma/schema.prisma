@@ -26,11 +26,11 @@ model submission {
   id         String    @id @default(dbgenerated("uuid_generate_v4()")) @db.Uuid
   created_at DateTime  @default(now())
   updated_at DateTime? @updatedAt
-  isFavorite Boolean?  @default(false)
-  data       Json
-  projectId  String    @db.Uuid
-  project    project   @relation(fields: [projectId], references: [id])
   userId     String    @db.Uuid
+  projectId  String    @db.Uuid
+  favorite   Boolean?  @default(false)
+  data       Json
+  project    project   @relation(fields: [projectId], references: [id])
   user       users     @relation(fields: [userId], references: [id])
 }
 
@@ -51,9 +51,9 @@ model apikey {
   created_at DateTime  @default(now())
   updated_at DateTime? @updatedAt
   name       String
-  key        String    @unique @default(uuid())
+  key        String    @unique @default(dbgenerated("uuid_generate_v4()")) @db.Uuid
+  userId     String    @db.Uuid
   projectId  String    @db.Uuid
   project    project   @relation(fields: [projectId], references: [id])
-  userId     String    @db.Uuid
   user       users     @relation(fields: [userId], references: [id])
 }
