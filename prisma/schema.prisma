@@ -1,0 +1,59 @@
+generator client {
+  provider        = "prisma-client-js"
+  previewFeatures = ["postgresqlExtensions"]
+}
+
+datasource db {
+  provider   = "postgresql"
+  url        = env("DATABASE_URL")
+  extensions = [uuid_ossp(map: "uuid-ossp")]
+}
+
+model project {
+  id          String       @id @default(dbgenerated("uuid_generate_v4()")) @db.Uuid
+  name        String
+  prefix      String
+  created_at  DateTime     @default(now())
+  updated_at  DateTime?    @updatedAt
+  ownerId     String       @db.Uuid
+  fields      Json
+  keys        apikey[]
+  owner       users        @relation(fields: [ownerId], references: [id])
+  submissions submission[]
+}
+
+model submission {
+  id         String    @id @default(dbgenerated("uuid_generate_v4()")) @db.Uuid
+  created_at DateTime  @default(now())
+  updated_at DateTime? @updatedAt
+  isFavorite Boolean?  @default(false)
+  data       Json
+  projectId  String    @db.Uuid
+  project    project   @relation(fields: [projectId], references: [id])
+  userId     String    @db.Uuid
+  user       users     @relation(fields: [userId], references: [id])
+}
+
+model users {
+  id          String       @id @default(dbgenerated("uuid_generate_v4()")) @db.Uuid
+  email       String       @unique
+  name        String?
+  avatar      String?
+  created_at  DateTime     @default(now())
+  updated_at  DateTime?    @updatedAt
+  keys        apikey[]
+  projects    project[]
+  submissions submission[]
+}
+
+model apikey {
+  id         String    @id @default(dbgenerated("uuid_generate_v4()")) @db.Uuid
+  created_at DateTime  @default(now())
+  updated_at DateTime? @updatedAt
+  name       String
+  key        String    @unique @default(uuid())
+  projectId  String    @db.Uuid
+  project    project   @relation(fields: [projectId], references: [id])
+  userId     String    @db.Uuid
+  user       users     @relation(fields: [userId], references: [id])
+}
