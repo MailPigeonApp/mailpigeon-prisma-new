@@ -5,21 +5,25 @@ generator client {
 
 datasource db {
   provider   = "postgresql"
-  url        = env("DATABASE_URL")
+  url        = env("PROD_DATABASE_URL")
   extensions = [uuid_ossp(map: "uuid-ossp")]
 }
 
 model project {
-  id          String       @id @default(dbgenerated("uuid_generate_v4()")) @db.Uuid
-  name        String
-  prefix      String
-  created_at  DateTime     @default(now())
-  updated_at  DateTime?    @updatedAt
-  ownerId     String       @db.Uuid
-  fields      Json
-  keys        apikey[]
-  owner       users        @relation(fields: [ownerId], references: [id])
-  submissions submission[]
+  id                  String         @id @default(dbgenerated("uuid_generate_v4()")) @db.Uuid
+  name                String
+  prefix              String
+  created_at          DateTime       @default(now())
+  updated_at          DateTime?      @updatedAt
+  ownerId             String         @db.Uuid
+  fields              Json
+  deleted_count       Int?           @default(0)
+  metadata            Json
+  keys                apikey[]
+  owner               users          @relation(fields: [ownerId], references: [id])
+  submissions         submission[]
+  integrations        integrations[]
+  active_integrations String[]       @default([])
 }
 
 model submission {
@@ -28,22 +32,28 @@ model submission {
   updated_at DateTime? @updatedAt
   userId     String    @db.Uuid
   projectId  String    @db.Uuid
-  favorite   Boolean?  @default(false)
   data       Json
+  favorite   Boolean?  @default(false)
+  increment  Int       @default(0)
+  read       Boolean?  @default(false)
   project    project   @relation(fields: [projectId], references: [id])
   user       users     @relation(fields: [userId], references: [id])
 }
 
 model users {
-  id          String       @id @default(dbgenerated("uuid_generate_v4()")) @db.Uuid
-  email       String       @unique
-  name        String?
-  avatar      String?
-  created_at  DateTime     @default(now())
-  updated_at  DateTime?    @updatedAt
-  keys        apikey[]
-  projects    project[]
-  submissions submission[]
+  id                        String         @id @default(dbgenerated("uuid_generate_v4()")) @db.Uuid
+  email                     String         @unique
+  name                      String?
+  avatar                    String?
+  created_at                DateTime       @default(now())
+  updated_at                DateTime?      @updatedAt
+  password                  String?
+  has_completed_walkthrough Boolean?       @default(false)
+  active_project            String?
+  keys                      apikey[]
+  projects                  project[]
+  submissions               submission[]
+  integrations              integrations[]
 }
 
 model apikey {
@@ -51,9 +61,38 @@ model apikey {
   created_at DateTime  @default(now())
   updated_at DateTime? @updatedAt
   name       String
-  key        String    @unique @default(dbgenerated("uuid_generate_v4()")) @db.Uuid
   userId     String    @db.Uuid
   projectId  String    @db.Uuid
+  key        String    @unique @default(dbgenerated("uuid_generate_v4()")) @db.Uuid
   project    project   @relation(fields: [projectId], references: [id])
   user       users     @relation(fields: [userId], references: [id])
+}
+
+model integrations {
+  id         String    @id @default(dbgenerated("uuid_generate_v4()")) @db.Uuid
+  created_at DateTime  @default(now())
+  updated_at DateTime? @updatedAt
+  name       String
+  type       String
+  data       Json
+  projectId  String    @db.Uuid
+  project    project   @relation(fields: [projectId], references: [id])
+  userId     String    @db.Uuid
+  user       users     @relation(fields: [userId], references: [id])
+}
+
+enum INTEGRATIONS {
+  telegram
+}
+
+enum COLORS {
+  red
+  orange
+  yellow
+  green
+  teal
+  blue
+  indigo
+  purple
+  pink
 }

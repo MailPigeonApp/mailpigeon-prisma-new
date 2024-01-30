@@ -35,15 +35,35 @@ async function main() {
 
   // await prisma.project.create({
   //   data: {
-  //     name: "Rare Goods Only",
-  //     prefix: "RGO",
-  //     fields: {
-  //       create: {
-  //         name: "Attendee",
+  //     name: "Grand Prix",
+  //     prefix: "GP",
+  //     fields: [
+  //       {
+  //         name: "Name",
   //         type: "string",
   //         required: true,
   //       },
-  //     },
+  //       {
+  //         name: "Email",
+  //         type: "string",
+  //         required: true,
+  //       },
+  //       {
+  //         name: "Phone Number",
+  //         type: "integer",
+  //         required: true,
+  //       },
+  //       {
+  //         name: "Address",
+  //         type: "string",
+  //         required: true,
+  //       },
+  //       {
+  //         name: "Attending",
+  //         type: "boolean",
+  //         required: true,
+  //       },
+  //     ],
   //     owner: {
   //       connect: {
   //         email: "killua@zolduck.co.uk",
@@ -64,25 +84,15 @@ async function main() {
 
   // await prisma.project.update({
   //   where: {
-  //     id: "82a43c94-8040-4b71-9914-ad4da68a3319",
+  //     id: "f2598b41-4930-4c9e-bc62-40c7fbf36860",
   //   },
   //   data: {
   //     fields: [
-  //       {
-  //         name: "attendee",
-  //         type: "string",
-  //         required: true,
-  //       },
-  //       {
-  //         name: "email",
-  //         type: "string",
-  //         required: true,
-  //       },
-  //       {
-  //         name: "location",
-  //         type: "string",
-  //         required: true,
-  //       },
+  //       // {
+  //       //   name: "Attendee",
+  //       //   type: "string",
+  //       //   required: true,
+  //       // },
   //     ],
   //   },
   // });
@@ -119,25 +129,93 @@ async function main() {
   //   },
   // });
 
-  const allProjects = await prisma.project.findMany({
-    // where: {
-    //   id: "82a43c94-8040-4b71-9914-ad4da68a3319",
-    // },
-    include: {
-      keys: true,
-      submissions: true,
-    },
-  });
-
-  // const allUsers = await prisma.users.findMany({
+  // const allProjects = await prisma.project.findMany({
+  //   // where: {
+  //   //   id: "82a43c94-8040-4b71-9914-ad4da68a3319",
+  //   // },
   //   include: {
-  //     projects: true,
-  //     submissions: true,
   //     keys: true,
+  //     submissions: true,
   //   },
   // });
 
-  console.dir(allProjects, { depth: null });
+  // await prisma.integrations.create({
+  //   data: {
+  //     name: "Telegram",
+  //     type: "telegram",
+  //     user: {
+  //       connect: {
+  //         email: "desmond@sofua.co.uk",
+  //       },
+  //     },
+  //     project: {
+  //       connect: {
+  //         id: "006ec3db-b5f1-4d3f-8c0f-77989dc8fd63",
+  //       },
+  //     },
+  //     data: {
+  //       botToken: "1234567890:ABCDEFGHIJKLMNOPQRSTUVWXYZ",
+  //       chatId: "1234567890",
+  //     },
+  //   },
+  // });
+
+  // await prisma.integrations.update({
+  //   where: {
+
+  //   }
+  // })
+
+  // await prisma.project.update({
+  //   where: {
+  //     id: "7c01be21-12c4-42f2-8386-854b77274276",
+  //   },
+  //   data: {
+  //     active_integrations: {
+  //       set: ["telegram"],
+  //     },
+  //   },
+  // });
+
+  // const allUsers = await prisma.users.findMany({
+  //   include: {
+  //     // projects: true,
+  //     // submissions: true,
+  //     // keys: true,
+  //     integrations: true,
+  //   },
+  // });
+
+  // await prisma.integrations.delete({
+  //   where: {
+  //     id: "485ef800-f4f6-424f-b119-f325a3429b1f",
+  //   },
+  // });
+
+  // await prisma.project.update({
+  //   where: {
+  //     id: "7a0092d6-0434-443d-9c95-1b46d3176ac2",
+  //   },
+  //   data: {
+  //     active_integrations: {
+  //       set: [],
+  //     },
+  //   },
+  // });
+
+  const allIntegrations = await prisma.project.findMany({
+    include: {
+      integrations: true,
+    },
+  });
+
+  // const allProjects = await prisma.project.findMany({
+  //   include: {
+  //     integrations: true,
+  //   },
+  // });
+
+  console.dir(allIntegrations, { depth: null });
 }
 
 main()
